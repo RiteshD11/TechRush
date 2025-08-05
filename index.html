@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StockTracer</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="font-poppins light-mode">
+  <div class="min-h-screen p-6 bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-500">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-4xl font-bold title-gradient animate-pulse">StockTracer</h1>
+        <button id="theme-toggle" class="p-3 rounded-full bg-white/80 dark:bg-gray-700/80 hover:bg-white dark:hover:bg-gray-600 transition-all duration-300 shadow-md">🌙</button>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="card p-6 rounded-2xl shadow-xl">
+          <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Search Stock</h2>
+          <div class="flex mb-4">
+            <input
+              type="text"
+              id="ticker-input"
+              placeholder="Enter ticker (e.g., AAPL)"
+              class="flex-1 p-3 border-0 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/60 dark:bg-gray-700/60 text-gray-800 dark:text-gray-100 transition-all duration-300"
+            />
+            <button
+              id="search-button"
+              class="p-3 search-button text-white rounded-r-xl font-medium"
+            >
+              Search
+            </button>
+          </div>
+          <p id="error" class="text-red-400 font-medium hidden"></p>
+          <div id="stock-info" class="space-y-2 hidden">
+            <h3 id="stock-name" class="text-xl font-semibold text-gray-800 dark:text-gray-100"></h3>
+            <p id="stock-price" class="text-lg"></p>
+            <p id="stock-change" class="text-lg text-green-500"></p>
+            <p id="stock-volume" class="text-lg"></p>
+          </div>
+        </div>
+        <div class="card p-6 rounded-2xl shadow-xl lg:col-span-2 chart-container">
+          <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Price Trend</h2>
+          <canvas id="stockChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

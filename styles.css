@@ -1,0 +1,64 @@
+body.light-mode {
+  background-color: #F3F4F6;
+  color: #111827;
+}
+
+body.dark-mode {
+  background-color: #111827;
+  color: #F9FAFB;
+}
+
+body.dark-mode .card {
+  background: rgba(31, 41, 55, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+}
+
+body.dark-mode .bg-white\/60 {
+  background-color: rgba(55, 65, 81, 0.7);
+  color: #F9FAFB;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(12px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.search-button {
+  background: linear-gradient(45deg, #3B82F6, #A78BFA);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.search-button:hover {
+  background: linear-gradient(45deg, #2563EB, #8B5CF6);
+  transform: scale(1.05);
+}
+
+.title-gradient {
+  background: linear-gradient(45deg, #3B82F6, #A78BFA);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.chart-container {
+  max-height: 350px;
+}
+
+@keyframes gradient-pulse {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.title-gradient {
+  background-size: 200% 200%;
+  animation: gradient-pulse 8s ease infinite;
+}
