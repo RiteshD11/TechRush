@@ -4,15 +4,34 @@ const mockStockData = {
   'MSFT': { name: 'Microsoft Corp.', price: 305.10, change: 5.20, volume: 23145000 }
 };
 
-const mockChartData = [
-  { date: '2025-07-29', price: 170 },
-  { date: '2025-07-30', price: 172 },
-  { date: '2025-07-31', price: 174 },
-  { date: '2025-08-01', price: 173 },
-  { date: '2025-08-02', price: 175 }
-];
+// Each ticker gets unique mock chart data
+const mockChartDataStore = {
+  'AAPL': [
+    { date: '2025-07-29', price: 170 },
+    { date: '2025-07-30', price: 172 },
+    { date: '2025-07-31', price: 174 },
+    { date: '2025-08-01', price: 173 },
+    { date: '2025-08-02', price: 175 }
+  ],
+  'GOOGL': [
+    { date: '2025-07-29', price: 2820 },
+    { date: '2025-07-30', price: 2810 },
+    { date: '2025-07-31', price: 2805 },
+    { date: '2025-08-01', price: 2799 },
+    { date: '2025-08-02', price: 2800.5 }
+  ],
+  'MSFT': [
+    { date: '2025-07-29', price: 299 },
+    { date: '2025-07-30', price: 300.5 },
+    { date: '2025-07-31', price: 304 },
+    { date: '2025-08-01', price: 302 },
+    { date: '2025-08-02', price: 305.1 }
+  ]
+};
 
 let isDarkMode = false;
+let currentChart = null;
+let currentTicker = null;
 
 const tickerInput = document.getElementById('ticker-input');
 const searchButton = document.getElementById('search-button');
@@ -23,16 +42,21 @@ const stockPrice = document.getElementById('stock-price');
 const stockChange = document.getElementById('stock-change');
 const stockVolume = document.getElementById('stock-volume');
 const themeToggle = document.getElementById('theme-toggle');
+const stockChartCanvas = document.getElementById('stockChart');
+const stockList = document.getElementById('stock-list');
 
-const renderChart = () => {
-  const ctx = document.getElementById('stockChart').getContext('2d');
-  new Chart(ctx, {
+function renderChart(ticker) {
+  const ctx = stockChartCanvas.getContext('2d');
+  if (currentChart) currentChart.destroy();
+
+  const chartData = mockChartDataStore[ticker] || [];
+  currentChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: mockChartData.map(data => data.date),
+      labels: chartData.map(data => data.date),
       datasets: [{
         label: 'Price',
-        data: mockChartData.map(data => data.price),
+        data: chartData.map(data => data.price),
         borderColor: '#3B82F6',
         backgroundColor: 'rgba(59, 130, 246, 0.2)',
         fill: true,
@@ -44,52 +68,104 @@ const renderChart = () => {
     options: {
       responsive: true,
       plugins: {
-        legend: { labels: { color: isDarkMode ? '#F9FAFB' : '#111827', font: { size: 14 } } }
+        legend: {
+          labels: {
+            color: isDarkMode ? '#F9FAFB' : '#111827',
+            font: { size: 14 }
+          }
+        }
       },
       scales: {
-        x: { 
-          grid: { display: false }, 
+        x: {
+          grid: { display: false },
           ticks: { color: isDarkMode ? '#F9FAFB' : '#111827', font: { size: 12 } }
         },
         y: {
           beginAtZero: false,
-          grid: { color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' },
-          ticks: { color: isDarkMode ? '#F9FAFB' : '#111827', font: { size: Twelve } }
+          grid: {
+            color: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+          },
+          ticks: { color: isDarkMode ? '#F9FAFB' : '#111827', font: { size: 12 } }
         }
       }
     }
   });
-};
+}
 
-searchButton.addEventListener('click', () => {
+function displayStock(ticker) {
+  const data = mockStockData[ticker];
+  if (!data) return;
+
+  stockName.textContent = data.name;
+  stockPrice.textContent = `Price: $${data.price.toFixed(2)}`;
+  stockChange.textContent = `Change: ${data.change >= 0 ? "+" : ""}${data.change.toFixed(2)}`;
+  stockChange.className = `text-lg ${data.change >= 0 ? 'text-green-400' : 'text-red-400'}`;
+  stockVolume.textContent = `Volume: ${data.volume.toLocaleString()}`;
+  stockInfo.classList.remove('hidden');
+
+  renderChart(ticker);
+
+  // Update menu highlight
+  [...stockList.children].forEach(li =>
+    li.classList.toggle('active', li.dataset.ticker === ticker)
+  );
+  currentTicker = ticker;
+}
+
+function showError(message) {
+  errorDisplay.textContent = message;
+  errorDisplay.classList.remove('hidden');
+  stockInfo.classList.add('hidden');
+}
+
+function handleSearch() {
   const ticker = tickerInput.value.trim().toUpperCase();
   errorDisplay.classList.add('hidden');
   stockInfo.classList.add('hidden');
-
   if (!ticker) {
-    errorDisplay.textContent = 'Enter a stock ticker.';
-    errorDisplay.classList.remove('hidden');
+    showError('Enter a stock ticker.');
     return;
   }
-
   if (mockStockData[ticker]) {
-    const data = mockStockData[ticker];
-    stockName.textContent = data.name;
-    stockPrice.textContent = `Price: $${data.price.toFixed(2)}`;
-    stockChange.textContent = `Change: ${data.change >= 0 ? '+' : ''}${data.change.toFixed(2)}`;
-    stockChange.className = `text-lg text-${data.change >= 0 ? 'green' : 'red'}-400`;
-    stockVolume.textContent = `Volume: ${data.volume.toLocaleString()}`;
-    stockInfo.classList.remove('hidden');
-    document.getElementById('stockChart').getContext('2d').clearRect(0, 0, stockChart.width, stockChart.height);
-    renderChart();
+    displayStock(ticker);
   } else {
-    errorDisplay.textContent = 'Stock not found.';
-    errorDisplay.classList.remove('hidden');
+    showError('Stock not found.');
+  }
+}
+
+// Populate menu with all stocks
+function renderStockMenu() {
+  stockList.innerHTML = "";
+  Object.entries(mockStockData).forEach(([ticker, info]) => {
+    const li = document.createElement('li');
+    li.textContent = `${ticker} - ${info.name}`;
+    li.dataset.ticker = ticker;
+    li.onclick = () => displayStock(ticker);
+    stockList.appendChild(li);
+  });
+}
+
+// Menu supports keyboard and mouse
+stockList.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const li = document.activeElement;
+    if (li && li.dataset.ticker) displayStock(li.dataset.ticker);
   }
 });
+
+searchButton.addEventListener('click', handleSearch);
+tickerInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleSearch(); });
 
 themeToggle.addEventListener('click', () => {
   isDarkMode = !isDarkMode;
   document.body.className = `font-poppins ${isDarkMode ? 'dark-mode' : 'light-mode'}`;
   themeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+  if (currentTicker) renderChart(currentTicker);
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  renderStockMenu();
+  // Auto-show first stock on load
+  const firstTicker = Object.keys(mockStockData)[0];
+  if (firstTicker) displayStock(firstTicker);
 });
