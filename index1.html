@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StockTracer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white transition-all">
+  <div class="max-w-5xl mx-auto p-6">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-4xl font-bold">📈 StockTracer</h1>
+      <button id="theme-toggle" class="p-2 rounded-full bg-white dark:bg-gray-800 shadow text-xl">🌙</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow space-y-4">
+        <h2 class="text-2xl font-semibold">Search Stock</h2>
+        <input
+          id="ticker-input"
+          type="text"
+          placeholder="Enter ticker (e.g. AAPL)"
+          class="w-full p-3 rounded border focus:ring focus:ring-blue-300 text-gray-800"
+        />
+        <button id="search-button" class="w-full bg-blue-500 hover:bg-blue-600 text-white p-3 rounded font-semibold">
+          Search
+        </button>
+        <div id="stock-info" class="hidden space-y-2">
+          <h3 id="stock-name" class="text-xl font-semibold"></h3>
+          <p id="stock-price"></p>
+          <p id="stock-change"></p>
+          <p id="stock-volume"></p>
+        </div>
+      </div>
+
+      <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow md:col-span-2">
+        <h2 class="text-2xl font-semibold mb-4">Price Trend</h2>
+        <canvas id="stockChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // Theme toggle
+  const toggleBtn = document.getElementById("theme-toggle");
+  toggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+  });
+
+  // Get today's formatted date (e.g., "Aug 5")
+  const getTodayLabel = () => {
+    const today = new Date();
+    const options = { month: "short", day: "numeric" };
+    return today.toLocaleDateString("en-US", options);
+  };
+
+  // Dummy stock data
+  const dummyStock = {
+    AAPL: {
+      name: "Apple Inc.",
+      price: "$194.55",
+      change: "+1.21%",
+      volume: "74M",
+      chartData: [189, 190, 191, 193, 194, 195, 194.55],
+    },
+    TSLA: {
+      name: "Tesla Inc.",
+      price: "$264.22",
+      change: "-0.72%",
+      volume: "52M",
+      chartData: [270, 268, 266, 265, 264, 263, 264.22],
+    },
+  };
+
+  // Setup chart
+  const ctx = document.getElementById("stockChart").getContext("2d");
+  let chart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", getTodayLabel()],
+      datasets: [{
+        label: "Price ($)",
+        data: [],
+        fill: false,
+        borderColor: "rgb(75, 192, 192)",
+        tension: 0.3
+      }]
+    }
+  });
+
+  // Handle search
+  document.getElementById("search-button").addEventListener("click", () => {
+    const ticker = document.getElementById("ticker-input").value.trim().toUpperCase();
+    const stock = dummyStock[ticker];
+
+    if (stock) {
+      document.getElementById("stock-name").innerText = stock.name;
+      document.getElementById("stock-price").innerText = "Price: " + stock.price;
+      document.getElementById("stock-change").innerText = "Change: " + stock.change;
+      document.getElementById("stock-volume").innerText = "Volume: " + stock.volume;
+      document.getElementById("stock-info").classList.remove("hidden");
+
+      // Update chart data
+      chart.data.datasets[0].data = stock.chartData;
+      chart.update();
+    } else {
+      alert("Ticker not found. Try AAPL or TSLA.");
+    }
+  });
+</script>
