@@ -18,8 +18,6 @@ body.dark-mode {
   background: rgba(243, 244, 246, 0.95);
   border-right: 1px solid #e5e7eb;
   padding: 1.5rem 1rem;
-  position: relative;
-  z-index: 3;
 }
 
 body.dark-mode .sidebar {
@@ -31,7 +29,6 @@ body.dark-mode .sidebar {
   margin-bottom: 1.25rem;
   font-size: 1.1rem;
   letter-spacing: 1px;
-  color: inherit;
 }
 
 #stock-list {
@@ -45,12 +42,12 @@ body.dark-mode .sidebar {
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
 #stock-list li.active, #stock-list li:hover {
   background: linear-gradient(90deg, #3B82F6 0%, #A78BFA 100%);
-  color: #fff;
+  color: #fff !important;
 }
 
 .content {
@@ -67,11 +64,10 @@ body.dark-mode .sidebar {
   border: 1px solid rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(12px);
   border-radius: 16px;
-  margin: 0 auto;
   max-width: 500px;
   width: 100%;
   box-shadow: 0 6px 36px 0 rgba(31, 41, 55, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s, box-shadow 0.3s;
   padding: 2rem;
 }
 
@@ -104,7 +100,6 @@ body.dark-mode .card {
   cursor: pointer;
   font-size: 1.5rem;
   margin-left: 12px;
-  vertical-align: middle;
 }
 
 .title-gradient {
@@ -157,7 +152,6 @@ body.dark-mode .card {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid #e5e7eb;
-    position: static;
   }
   .content {
     padding: 1rem;
